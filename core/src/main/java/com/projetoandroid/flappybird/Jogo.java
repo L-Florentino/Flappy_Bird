@@ -8,11 +8,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Jogo extends ApplicationAdapter {
 
-    private  int movimentoX = 0;
-    private  int movimentoY = 0;
+    //Texturas
     private SpriteBatch batch;
     private Texture[] passaros;
     private Texture fundo;
+    private Texture canoBaixo;
+    private Texture canoTopo;
 
     // Atributos de configurações
     private float larguraDispositivo;
@@ -20,33 +21,24 @@ public class Jogo extends ApplicationAdapter {
     private float variacao = 0;
     private float gravidade = 1;
     private float posicaoPassaroY = 0;
+    private float posicaoCanoHorizontal = 0;
+    private float espacoEntreCanos;
 
     @Override
     public void create() {
-        //Gdx.app.log("create", "Jogo iniciado");
-        batch = new SpriteBatch();
-        passaros = new Texture[3];
-        passaros[0] = new Texture("passaro1.png");
-        passaros[1] = new Texture("passaro2.png");
-        passaros[2] = new Texture("passaro3.png");
-        fundo = new Texture("fundo.png");
-
-        larguraDispositivo = Gdx.graphics.getWidth();
-        alturaDispositivo = Gdx.graphics.getHeight();
-        posicaoPassaroY = alturaDispositivo / 2;
-
-
+        inicializarTexturas();
+        inicializarObjetos();
     }
 
     @Override
     public void render() {
+        verificarEstadoDoJogo();
+        desenharTexturas();
+    }
 
-        batch.begin();
-        /*
-        * 0,1,2, 3
-        * */
-        if (variacao > 3)
-            variacao = 0;
+    private void verificarEstadoDoJogo(){
+
+
 
         // Aplicar evento de toque na tela
         boolean toqueTela = Gdx.input.justTouched();
@@ -57,20 +49,48 @@ public class Jogo extends ApplicationAdapter {
         if (posicaoPassaroY > 0 || toqueTela)
             posicaoPassaroY = posicaoPassaroY - gravidade;
 
-        batch.draw(fundo, 0, 0, larguraDispositivo, alturaDispositivo);
-        batch.draw( passaros[(int) variacao], 30, posicaoPassaroY);
-
         variacao += Gdx.graphics.getDeltaTime() * 10;
+        // Verifica variação para bater asas do pássaro
+        if (variacao > 3)
+            variacao = 0;
 
         gravidade ++;
-        movimentoX ++;
-        movimentoY ++;
-        batch.end();
 
-        /*
-        contador++;
-        Gdx.app.log("render", "Jogo renderizado: " + contador);
-        */
+    }
+
+    private  void desenharTexturas(){
+        batch.begin();
+
+        batch.draw(fundo, 0, 0, larguraDispositivo, alturaDispositivo);
+        batch.draw( passaros[(int) variacao], 30, posicaoPassaroY);
+        // posicaoCanoHorizontal --;
+        batch.draw(canoBaixo, posicaoCanoHorizontal - 100, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos / 2);
+        batch.draw(canoTopo, posicaoCanoHorizontal - 100, alturaDispositivo / 2 + espacoEntreCanos / 2);
+
+        batch.end();
+    }
+
+    private  void inicializarTexturas(){
+        passaros = new Texture[3];
+        passaros[0] = new Texture("passaro1.png");
+        passaros[1] = new Texture("passaro2.png");
+        passaros[2] = new Texture("passaro3.png");
+
+        fundo = new Texture("fundo.png");
+        canoBaixo = new Texture("cano_baixo_maior.png");
+        canoTopo = new Texture("cano_topo_maior.png");
+
+    }
+
+    private void inicializarObjetos(){
+
+        batch = new SpriteBatch();
+
+        larguraDispositivo = Gdx.graphics.getWidth();
+        alturaDispositivo = Gdx.graphics.getHeight();
+        posicaoPassaroY = alturaDispositivo / 2;
+        posicaoCanoHorizontal = larguraDispositivo;
+        espacoEntreCanos = 400;
     }
 
     @Override
