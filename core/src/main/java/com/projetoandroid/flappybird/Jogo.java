@@ -18,7 +18,7 @@ public class Jogo extends ApplicationAdapter {
     private float larguraDispositivo;
     private float alturaDispositivo;
     private float variacao = 0;
-    private float gravidade = 0;
+    private float gravidade = 1;
     private float posicaoPassaroY = 0;
 
     @Override
@@ -49,8 +49,12 @@ public class Jogo extends ApplicationAdapter {
             variacao = 0;
 
         // Aplicar evento de toque na tela
+        boolean toqueTela = Gdx.input.justTouched();
+        if (toqueTela){
+            gravidade = -25;
+        }
         // Aplicar a gravidade no pássaro
-        if (posicaoPassaroY > 0)
+        if (posicaoPassaroY > 0 || toqueTela)
             posicaoPassaroY = posicaoPassaroY - gravidade;
 
         batch.draw(fundo, 0, 0, larguraDispositivo, alturaDispositivo);
