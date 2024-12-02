@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
@@ -71,7 +72,7 @@ public class Jogo extends ApplicationAdapter {
         // Aplicar evento de toque na tela
         boolean toqueTela = Gdx.input.justTouched();
         if (toqueTela){
-            gravidade = -25;
+            gravidade = -15;
         }
         // Aplicar a gravidade no pássaro
         if (posicaoPassaroY > 0 || toqueTela)
@@ -87,17 +88,47 @@ public class Jogo extends ApplicationAdapter {
 
     private void detectarColisoes(){
 
-        //circuloPassaro
-        //retanguloCanoBaixo
-        //retanguloCanoTopo
+        circuloPassaro.set(
+            50 + passaros[0].getWidth() / 2, posicaoPassaroY + passaros[0].getHeight() / 2, passaros[0].getWidth() / 2
+        );
 
+        retanguloCanoBaixo.set(
+            posicaoCanoHorizontal, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos / 2 + posicaoCanoVertical,
+            canoBaixo.getWidth(), canoBaixo.getHeight()
+        );
+
+        retanguloCanoTopo.set(
+            posicaoCanoHorizontal, alturaDispositivo / 2 + espacoEntreCanos / 2 +  posicaoCanoVertical,
+            canoTopo.getWidth(), canoTopo.getHeight()
+        );
+
+        boolean colidiuCanoTopo = Intersector.overlaps(circuloPassaro, retanguloCanoTopo);
+        boolean colidiuCanoBaixo = Intersector.overlaps(circuloPassaro, retanguloCanoBaixo);
+
+        if ( colidiuCanoTopo || colidiuCanoBaixo ){
+            Gdx.app.log("Log", "Colidiu");
+        }
+
+        /*
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        shapeRenderer.circle(50, posicaoPassaroY, passaros[0].getWidth() / 2);
         shapeRenderer.setColor(Color.BLUE);
 
-        shapeRenderer.end();
+        shapeRenderer.circle(50 + passaros[0].getWidth() / 2, posicaoPassaroY + passaros[0].getHeight() / 2, passaros[0].getWidth() / 2);
 
+        // Topo
+        shapeRenderer.rect(
+            posicaoCanoHorizontal, alturaDispositivo / 2 + espacoEntreCanos / 2 +  posicaoCanoVertical,
+            canoTopo.getWidth(), canoTopo.getHeight()
+        );
+
+        // Baixo
+        shapeRenderer.rect(
+            posicaoCanoHorizontal, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos / 2 + posicaoCanoVertical,
+            canoBaixo.getWidth(), canoBaixo.getHeight()
+        );
+
+        shapeRenderer.end();
+        */
     }
 
     private  void desenharTexturas(){
