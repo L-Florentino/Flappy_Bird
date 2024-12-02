@@ -41,6 +41,7 @@ public class Jogo extends ApplicationAdapter {
     private Random random;
     private int pontos = 0;
     private boolean passouCano = false;
+    private int estadoJogo = 0;
 
     // Exibição de textos
     BitmapFont textoPontuacao;
@@ -61,29 +62,40 @@ public class Jogo extends ApplicationAdapter {
 
     private void verificarEstadoDoJogo(){
 
-        //Movimentar o cano
-        posicaoCanoHorizontal -= Gdx.graphics.getDeltaTime() * 200;
-        if (posicaoCanoHorizontal < - canoTopo.getWidth()){
-            posicaoCanoHorizontal = larguraDispositivo;
-            posicaoCanoVertical = random.nextInt(400) - 200;
-            passouCano = false;
-        }
-
-        // Aplicar evento de toque na tela
         boolean toqueTela = Gdx.input.justTouched();
-        if (toqueTela){
-            gravidade = -15;
+
+        if (estadoJogo == 0) {
+
+            // Aplicar evento de toque na tela
+            if (toqueTela){
+                gravidade = -15;
+                estadoJogo = 1;
+            }
+
+        } else if (estadoJogo == 1) {
+
+            // Aplicar evento de toque na tela
+            if (toqueTela){
+                gravidade = -15;
+            }
+
+            //Movimentar o cano
+            posicaoCanoHorizontal -= Gdx.graphics.getDeltaTime() * 200;
+            if (posicaoCanoHorizontal < - canoTopo.getWidth()){
+                posicaoCanoHorizontal = larguraDispositivo;
+                posicaoCanoVertical = random.nextInt(400) - 200;
+                passouCano = false;
+            }
+
+            // Aplicar a gravidade no pássaro
+            if (posicaoPassaroY > 0 || toqueTela)
+                posicaoPassaroY = posicaoPassaroY - gravidade;
+
+            gravidade ++;
+
+        } else if (estadoJogo == 2) {
+
         }
-        // Aplicar a gravidade no pássaro
-        if (posicaoPassaroY > 0 || toqueTela)
-            posicaoPassaroY = posicaoPassaroY - gravidade;
-
-        variacao += Gdx.graphics.getDeltaTime() * 10;
-        // Verifica variação para bater asas do pássaro
-        if (variacao > 3)
-            variacao = 0;
-
-        gravidade ++;
     }
 
     private void detectarColisoes(){
@@ -107,6 +119,7 @@ public class Jogo extends ApplicationAdapter {
 
         if ( colidiuCanoTopo || colidiuCanoBaixo ){
             Gdx.app.log("Log", "Colidiu");
+            estadoJogo = 2;
         }
 
         /*
@@ -152,6 +165,11 @@ public class Jogo extends ApplicationAdapter {
                 passouCano = true;
             }
         }
+
+        variacao += Gdx.graphics.getDeltaTime() * 10;
+        // Verifica variação para bater asas do pássaro
+        if (variacao > 3)
+            variacao = 0;
     }
 
 
