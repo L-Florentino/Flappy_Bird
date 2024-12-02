@@ -22,6 +22,7 @@ public class Jogo extends ApplicationAdapter {
     private Texture fundo;
     private Texture canoBaixo;
     private Texture canoTopo;
+    private Texture gameOver;
 
     // Formas para colisão
     private ShapeRenderer shapeRenderer;
@@ -45,6 +46,8 @@ public class Jogo extends ApplicationAdapter {
 
     // Exibição de textos
     BitmapFont textoPontuacao;
+    BitmapFont textoReiniciair;
+    BitmapFont textoMelhorPontuacao;
 
     @Override
     public void create() {
@@ -152,6 +155,13 @@ public class Jogo extends ApplicationAdapter {
         batch.draw(canoBaixo, posicaoCanoHorizontal, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos / 2 + posicaoCanoVertical);
         batch.draw(canoTopo, posicaoCanoHorizontal, alturaDispositivo / 2 + espacoEntreCanos / 2 +  posicaoCanoVertical);
         textoPontuacao.draw(batch, String.valueOf(pontos), larguraDispositivo / 2, alturaDispositivo - 110);
+
+        if (estadoJogo == 2){
+            batch.draw(gameOver, larguraDispositivo / 2 - gameOver.getWidth() / 2, alturaDispositivo / 2);
+            textoReiniciair.draw(batch, "Toque para reiniciar", larguraDispositivo / 2 - 140, alturaDispositivo / 2 - gameOver.getHeight() / 2);
+            textoMelhorPontuacao.draw(batch, "Seu record é: 0 pontos", larguraDispositivo / 2 - 140, alturaDispositivo / 2 - gameOver.getHeight());
+        }
+
         batch.end();
     }
 
@@ -182,6 +192,7 @@ public class Jogo extends ApplicationAdapter {
         fundo = new Texture("fundo.png");
         canoBaixo = new Texture("cano_baixo_maior.png");
         canoTopo = new Texture("cano_topo_maior.png");
+        gameOver = new Texture("game_over.png");
 
     }
 
@@ -200,6 +211,14 @@ public class Jogo extends ApplicationAdapter {
         textoPontuacao = new BitmapFont();
         textoPontuacao.setColor(Color.WHITE);
         textoPontuacao.getData().setScale(10);
+
+        textoReiniciair = new BitmapFont();
+        textoReiniciair.setColor(Color.GREEN);
+        textoReiniciair.getData().setScale(2);
+
+        textoMelhorPontuacao = new BitmapFont();
+        textoMelhorPontuacao.setColor(Color.RED);
+        textoMelhorPontuacao.getData().setScale(2);
 
         // Formas geométricas para colisões
         shapeRenderer = new ShapeRenderer();
