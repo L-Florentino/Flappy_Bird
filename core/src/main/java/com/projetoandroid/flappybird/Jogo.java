@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.Random;
+
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Jogo extends ApplicationAdapter {
 
@@ -22,7 +24,9 @@ public class Jogo extends ApplicationAdapter {
     private float gravidade = 1;
     private float posicaoPassaroY = 0;
     private float posicaoCanoHorizontal = 0;
+    private float posicaoCanoVertical;
     private float espacoEntreCanos;
+    private Random random;
 
     @Override
     public void create() {
@@ -38,7 +42,12 @@ public class Jogo extends ApplicationAdapter {
 
     private void verificarEstadoDoJogo(){
 
-
+        //Movimentar o cano
+        posicaoCanoHorizontal -= Gdx.graphics.getDeltaTime() * 200;
+        if (posicaoCanoHorizontal < - canoTopo.getWidth()){
+            posicaoCanoHorizontal = larguraDispositivo;
+            posicaoCanoVertical = random.nextInt(400) - 200;
+        }
 
         // Aplicar evento de toque na tela
         boolean toqueTela = Gdx.input.justTouched();
@@ -63,9 +72,8 @@ public class Jogo extends ApplicationAdapter {
 
         batch.draw(fundo, 0, 0, larguraDispositivo, alturaDispositivo);
         batch.draw( passaros[(int) variacao], 30, posicaoPassaroY);
-        // posicaoCanoHorizontal --;
-        batch.draw(canoBaixo, posicaoCanoHorizontal - 100, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos / 2);
-        batch.draw(canoTopo, posicaoCanoHorizontal - 100, alturaDispositivo / 2 + espacoEntreCanos / 2);
+        batch.draw(canoBaixo, posicaoCanoHorizontal, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos / 2 + posicaoCanoVertical);
+        batch.draw(canoTopo, posicaoCanoHorizontal, alturaDispositivo / 2 + espacoEntreCanos / 2 +  posicaoCanoVertical);
 
         batch.end();
     }
@@ -85,6 +93,7 @@ public class Jogo extends ApplicationAdapter {
     private void inicializarObjetos(){
 
         batch = new SpriteBatch();
+        random = new Random();
 
         larguraDispositivo = Gdx.graphics.getWidth();
         alturaDispositivo = Gdx.graphics.getHeight();
