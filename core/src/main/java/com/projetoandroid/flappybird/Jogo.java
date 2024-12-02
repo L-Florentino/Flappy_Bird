@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,6 +14,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.Random;
 
@@ -61,6 +65,12 @@ public class Jogo extends ApplicationAdapter {
     // Objeto salvar pontuação
     Preferences preferencias;
 
+    // Objetos para câmera
+    private OrthographicCamera camera;
+    private Viewport viewport;
+    private final float VIRTUAL_WIDTH = 720;
+    private final float VIRTUAL_HEIGHT = 1280;
+
     @Override
     public void create() {
         inicializarTexturas();
@@ -69,6 +79,10 @@ public class Jogo extends ApplicationAdapter {
 
     @Override
     public void render() {
+
+        // Limpar frames anteriores
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
         verificarEstadoDoJogo();
         validarPontos();
         desenharTexturas();
@@ -97,7 +111,7 @@ public class Jogo extends ApplicationAdapter {
             }
 
             //Movimentar o cano
-            posicaoCanoHorizontal -= Gdx.graphics.getDeltaTime() * 200;
+            posicaoCanoHorizontal -= Gdx.graphics.getDeltaTime() * 400;
             if (posicaoCanoHorizontal < - canoTopo.getWidth()){
                 posicaoCanoHorizontal = larguraDispositivo;
                 posicaoCanoVertical = random.nextInt(400) - 200;
@@ -165,6 +179,7 @@ public class Jogo extends ApplicationAdapter {
         }
 
         /*
+        // Define as formas para vizualizar colisões
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.BLUE);
 
@@ -187,6 +202,9 @@ public class Jogo extends ApplicationAdapter {
     }
 
     private  void desenharTexturas(){
+
+        batch.setProjectionMatrix(camera.combined);
+
         batch.begin();
 
         batch.draw(fundo, 0, 0, larguraDispositivo, alturaDispositivo);
@@ -241,16 +259,16 @@ public class Jogo extends ApplicationAdapter {
         batch = new SpriteBatch();
         random = new Random();
 
-        larguraDispositivo = Gdx.graphics.getWidth();
-        alturaDispositivo = Gdx.graphics.getHeight();
+        larguraDispositivo = VIRTUAL_WIDTH;
+        alturaDispositivo = VIRTUAL_HEIGHT;
         posicaoPassaroY = alturaDispositivo / 2;
         posicaoCanoHorizontal = larguraDispositivo;
-        espacoEntreCanos = 400;
+        espacoEntreCanos = 250;
 
         // Configuração do texto
         textoPontuacao = new BitmapFont();
         textoPontuacao.setColor(Color.WHITE);
-        textoPontuacao.getData().setScale(10);
+        textoPontuacao.getData().setScale(6);
 
         textoReiniciair = new BitmapFont();
         textoReiniciair.setColor(Color.GREEN);
@@ -274,6 +292,17 @@ public class Jogo extends ApplicationAdapter {
         // Configurações de preferencias dos objetos
         preferencias = Gdx.app.getPreferences("FlappyBird");
         pontuacaoMaxima = preferencias.getInteger("pontuacaoMaxima", 0);
+
+        // Configurações da câmera
+        camera = new OrthographicCamera();
+        camera.position.set(VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, 0);
+        viewport = new StretchViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
+
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
     }
 
     @Override
