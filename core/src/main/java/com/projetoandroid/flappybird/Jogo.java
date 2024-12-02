@@ -2,6 +2,7 @@ package com.projetoandroid.flappybird;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -49,6 +50,11 @@ public class Jogo extends ApplicationAdapter {
     BitmapFont textoReiniciair;
     BitmapFont textoMelhorPontuacao;
 
+    // Configurar sons
+    Sound somVoando;
+    Sound somColisao;
+    Sound somPontuacao;
+
     @Override
     public void create() {
         inicializarTexturas();
@@ -73,6 +79,7 @@ public class Jogo extends ApplicationAdapter {
             if (toqueTela){
                 gravidade = -15;
                 estadoJogo = 1;
+                somVoando.play();
             }
 
         } else if (estadoJogo == 1) {
@@ -80,6 +87,7 @@ public class Jogo extends ApplicationAdapter {
             // Aplicar evento de toque na tela
             if (toqueTela){
                 gravidade = -15;
+                somVoando.play();
             }
 
             //Movimentar o cano
@@ -97,6 +105,15 @@ public class Jogo extends ApplicationAdapter {
             gravidade ++;
 
         } else if (estadoJogo == 2) {
+
+            // Aplicar evento de toque na tela
+            if (toqueTela){
+                estadoJogo = 0;
+                pontos = 0;
+                gravidade = 0;
+                posicaoPassaroY = alturaDispositivo / 2;
+                posicaoCanoHorizontal = larguraDispositivo;
+            }
 
         }
     }
@@ -173,6 +190,7 @@ public class Jogo extends ApplicationAdapter {
             if (!passouCano) {
                 pontos++;
                 passouCano = true;
+                somPontuacao.play();
             }
         }
 
@@ -225,6 +243,11 @@ public class Jogo extends ApplicationAdapter {
         circuloPassaro = new Circle();
         retanguloCanoBaixo = new Rectangle();
         retanguloCanoTopo = new Rectangle();
+
+        // Inicializa sons
+        somVoando = Gdx.audio.newSound(Gdx.files.internal("som_asa.wav"));
+        somColisao = Gdx.audio.newSound(Gdx.files.internal("som_colisao.wav"));
+        somPontuacao = Gdx.audio.newSound(Gdx.files.internal("som_pontos.wav"));
     }
 
     @Override
