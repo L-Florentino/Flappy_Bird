@@ -2,7 +2,9 @@ package com.projetoandroid.flappybird;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.Random;
@@ -27,6 +29,11 @@ public class Jogo extends ApplicationAdapter {
     private float posicaoCanoVertical;
     private float espacoEntreCanos;
     private Random random;
+    private int pontos = 0;
+    private boolean passouCano = false;
+
+    // Exibição de textos
+    BitmapFont textoPontuacao;
 
     @Override
     public void create() {
@@ -37,6 +44,7 @@ public class Jogo extends ApplicationAdapter {
     @Override
     public void render() {
         verificarEstadoDoJogo();
+        validarPontos();
         desenharTexturas();
     }
 
@@ -47,6 +55,7 @@ public class Jogo extends ApplicationAdapter {
         if (posicaoCanoHorizontal < - canoTopo.getWidth()){
             posicaoCanoHorizontal = larguraDispositivo;
             posicaoCanoVertical = random.nextInt(400) - 200;
+            passouCano = false;
         }
 
         // Aplicar evento de toque na tela
@@ -71,12 +80,25 @@ public class Jogo extends ApplicationAdapter {
         batch.begin();
 
         batch.draw(fundo, 0, 0, larguraDispositivo, alturaDispositivo);
-        batch.draw( passaros[(int) variacao], 30, posicaoPassaroY);
+        batch.draw( passaros[(int) variacao], 50, posicaoPassaroY);
         batch.draw(canoBaixo, posicaoCanoHorizontal, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos / 2 + posicaoCanoVertical);
         batch.draw(canoTopo, posicaoCanoHorizontal, alturaDispositivo / 2 + espacoEntreCanos / 2 +  posicaoCanoVertical);
-
+        textoPontuacao.draw(batch, String.valueOf(pontos), larguraDispositivo / 2, alturaDispositivo - 110);
         batch.end();
     }
+
+    public void validarPontos(){
+
+
+        if (posicaoCanoHorizontal < 50 - passaros[0].getWidth()) {
+            // Passou da posição do pássaro
+            if (!passouCano) {
+                pontos++;
+                passouCano = true;
+            }
+        }
+    }
+
 
     private  void inicializarTexturas(){
         passaros = new Texture[3];
@@ -100,6 +122,11 @@ public class Jogo extends ApplicationAdapter {
         posicaoPassaroY = alturaDispositivo / 2;
         posicaoCanoHorizontal = larguraDispositivo;
         espacoEntreCanos = 400;
+
+        // Configuração do texto
+        textoPontuacao = new BitmapFont();
+        textoPontuacao.setColor(Color.WHITE);
+        textoPontuacao.getData().setScale(10);
     }
 
     @Override
